@@ -47,9 +47,9 @@ class Ui_MainWindow(object):
         self.button_run = QtWidgets.QPushButton(self.layoutWidget)
         self.button_run.setObjectName("button_run")
         self.verticalLayout.addWidget(self.button_run)
-        self.widget = QtWidgets.QWidget(self.centralwidget)
-        self.widget.setGeometry(QtCore.QRect(210, 30, 521, 411))
-        self.widget.setObjectName("widget")
+        self.mainGraph = GraphicsLayoutWidget(self.centralwidget)
+        self.mainGraph.setGeometry(QtCore.QRect(210, 30, 521, 411))
+        self.mainGraph.setObjectName("mainGraph")
         self.label = QtWidgets.QLabel(self.centralwidget)
         self.label.setGeometry(QtCore.QRect(70, 10, 67, 17))
         self.label.setObjectName("label")
@@ -129,3 +129,4 @@ class Ui_MainWindow(object):
         self.actionAP.setText(_translate("MainWindow", "AP间隔"))
 
 
+from pyqtgraph import GraphicsLayoutWidget

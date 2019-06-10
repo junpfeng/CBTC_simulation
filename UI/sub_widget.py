@@ -3,6 +3,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from myData import *
+from myAlogrithm import *
+import myMainWindow as mmw
 
 
 class SubWidgetInterf(QWidget):
@@ -198,6 +200,7 @@ class SubWidgetTrack(QWidget):
         self.setWindowTitle('轨道参数')  # 这个是父类QWidget的方法
         self.resize(200, 100)
         self.track_widget()  # 实际上，就相当于将track_widget里的内容直接定义在__init__方法中
+        self.index = 0
 
 
     def track_widget(self):
@@ -294,15 +297,25 @@ class SubWidgetTrack(QWidget):
     def slot_track_sure(self):
         print("sure")
         if self.lineEdit_type == "圆弧型":
-            myDataContainer.get_track_data(self.lineEdit_type,
+            myDataContainer.set_track_data(self.index,
+                                           self.lineEdit_type.text(),
                                             self.lineEdit_begin.text(),
                                             self.lineEdit_end.text(),
-                                            center=self.lineEdit_center(),
-                                            degree=self.lineEdit_degree())
+                                            center=self.lineEdit_center.text(),
+                                            degree=self.lineEdit_degree.text())
+            [track_x, track_y] = myDataContainer.get_tracak_list(self.index)
+            mmw.graph_paint(track_x, track_y)
+            # 将这些数据绘制轨道图
+            self.index = self.index + 1
+
+
         else:
             myDataContainer.get_track_data(self.lineEdit_type,
                                            self.lineEdit_begin.text(),
                                            self.lineEdit_end.text())
+        """在graph上绘制出路线,这里的绘制全部是散点图
+        因此，下面绘图函数的输入应当是路线散点"""
+       # myTrackGraph.paint(point_set)
 
 
 
@@ -324,8 +337,6 @@ mySubWidgetRec = SubWidgetRec()
 mySubWidgetInterf = SubWidgetInterf()
 
 if __name__ == "__main__":
-#    app = QApplication(sys.argv)
-   # main = SubWidgetTrack()
     main = SubWidgetScene()
     main.show()
     sys.exit(app.exec_())
