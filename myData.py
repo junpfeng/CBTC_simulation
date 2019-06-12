@@ -40,14 +40,17 @@ class DataContainer():
         self.interf_coordinate_2 = []
 
     # ------将直接获取的起点终点轨道坐标转换为轨道间隔坐标-----------
-    def get_tracak_list(self, index=0):
+    def get_track_list(self, index=0):
         """返回轨道坐标的x轴和y轴"""
+        _type = self.type[index]
         _begin = str2coordinate(self.begin[index])
         _end = str2coordinate(self.end[index])
-        _center = str2coordinate(self.center[index])
-        _degree = str2coordinate(self.degree[index])
-        _type = self.type[index]
-        return myTrackTransfrom.get_shape(self, _type, begin=_begin, end=_end, center=_center, degree=_degree, step=5)
+        if _type == "圆弧型":
+            _center = str2coordinate(self.center[index])
+            _degree = angle2radian(self.degree[index])
+            return myTrackTransfrom.get_shape(_type, begin=_begin, end=_end, center=_center, degree=_degree, step=5)
+        else:
+            return myTrackTransfrom.get_shape(_type, begin=_begin, end=_end, step=5)
 
     # ------从gui界面获取数据的算法-----------------------------
     def set_track_data(self, index, type, begin, end, center="/", degree="/"):
@@ -120,4 +123,4 @@ class DataContainer():
 
 
 app = QApplication(sys.argv).instance()
-myDataContainer = DataContainer()
+myDataContainer = DataContainer() # 单例对象

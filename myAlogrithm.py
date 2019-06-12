@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import math
 
 
-class MyTrack(object):
+class TrackTransfrom(object):
 
     def __init__(self,
                  line_list=list(range(3)),
@@ -27,6 +27,11 @@ class MyTrack(object):
         plt.scatter(x, y, marker="x")
         plt.show()
 
+    def get_shape(self, _type, begin=[], end=[], center=[], degree=1, step=1):
+        if _type == "圆弧型":
+            return self.get_circle(begin=begin, end=end, center=center, degree=degree, step=step)
+        elif _type == "直线型":
+            return self.get_line(begin=begin, end=end, step=step)
 
     def get_line(self, begin, end, step):
         """begin是起点坐标、end是终点坐标、step是步长"""
@@ -70,7 +75,7 @@ class MyTrack(object):
         edx = end[0]
         edy = end[1]
 
-        # 首先求圆心坐标和半径
+        # 首先求实际的可能的圆心坐标和半径
         cenx, ceny = sy.symbols('cenx,ceny')
         res = sy.solve([pow(bgx-cenx, 2) + pow(bgy-ceny, 2)
                         - pow(edx-cenx, 2) - pow(edy-ceny, 2),
@@ -88,8 +93,8 @@ class MyTrack(object):
             ceny = res[1][ceny]
 
         # 求圆弧的起点、终点与x轴之间的夹角
-        alpha = np.array([bgx, edx])
-        beta = np.array([bgy, edy])
+        alpha = np.array([bgx-cenx, bgy-ceny])
+        beta = np.array([edx-cenx, edy-ceny])
         gama = np.array([1, 0])
         r = math.sqrt(alpha[0]**2 + alpha[1]**2)  #r是圆弧半径
         theta0 = math.acos(np.dot(alpha, gama) / math.sqrt(alpha[0] ** 2 + alpha[1] ** 2)
@@ -126,78 +131,77 @@ class MyTrack(object):
 
         return [xn, yn]
 
-    def set_step(self, step):
-        self.__Step = step
+    # def set_step(self, step):
+    #     self.__Step = step
 
 
-class MyTrain(object):
-    """列车类包括：列车的接受增益、中断阈值、射频保护比（SIR）"""
-    """灵敏度"""
+# class MyTrain(object):
+#     """列车类包括：列车的接受增益、中断阈值、射频保护比（SIR）"""
+#     """灵敏度"""
+#
+#     def __init__(self,
+#                  rec_pow = 0,
+#                  rec_gain = 0,
+#                  threshold = 0,
+#                  min_sir = 0,
+#                  sensitivity = 0):
+#         self.__RecPow = rec_pow
+#         self.__RecGain = rec_gain
+#         self.__threshold = threshold
+#         self.__MinSIR = min_sir
+#         self.__sensitivity = sensitivity
+#
+#
+# class MyInterference(object):
+#     """干扰基站的坐标、干扰功率"""
+#     def __init__(self,
+#                  position=[0, 0],
+#                  power=24.8):
+#         self.__position = position
+#         self.__power = power
 
-    def __init__(self,
-                 rec_pow = 0,
-                 rec_gain = 0,
-                 threshold = 0,
-                 min_sir = 0,
-                 sensitivity = 0):
-        self.__RecPow = rec_pow
-        self.__RecGain = rec_gain
-        self.__threshold = threshold
-        self.__MinSIR = min_sir
-        self.__sensitivity = sensitivity
 
-
-class MyInterference(object):
-    """干扰基站的坐标、干扰功率"""
-    def __init__(self,
-                 position=[0, 0],
-                 power=24.8):
-        self.__position = position
-        self.__power = power
-
-
-class MyAP(object):
-    """AP类包括：发射功率、发射增益、AP的坐标"""
-    def __init__(self,
-                 power=0,
-                 gain=0,
-                 position=[0, 0]
-                 ):
-        self.__power = power
-        self.__gain = gain
-        self.__position = position
+# class MyAP(object):
+#     """AP类包括：发射功率、发射增益、AP的坐标"""
+#     def __init__(self,
+#                  power=0,
+#                  gain=0,
+#                  position=[0, 0]
+#                  ):
+#         self.__power = power
+#         self.__gain = gain
+#         self.__position = position
 
 
 # 虚拟场景分为5类：目前主要使用外部导入类和平原这两种
+#
+# class ScenePlain(object):
+#     def __init__(self,
+#                  refer=1,
+#                  exp=3,
+#                  variance=2.75,  # 对数方差
+#                  ):
+#         self.refer = refer
+#         self.exp = exp
+#         self.variance = variance
+#
+#     def log_distance_model(self):
+#         #
+#         pass
+#
+#
+# class ExImporter(object):
+#     """外部导入器，导入每个点上的干扰功率"""
+#     def __init__(self, ):
+#         pass
+#
+#     def txt_parse(self, txt):
+#         # 提取boyu输出文件中的干扰功率部分
+#         pass
 
-class ScenePlain(object):
-    def __init__(self,
-                 refer=1,
-                 exp=3,
-                 variance=2.75,  # 对数方差
-                 ):
-        self.refer = refer
-        self.exp = exp
-        self.variance = variance
-
-    def log_distance_model(self):
-        #
-        pass
-
-
-class ExImporter(object):
-    """外部导入器，导入每个点上的干扰功率"""
-    def __init__(self, ):
-        pass
-
-    def txt_parse(self, txt):
-        # 提取boyu输出文件中的干扰功率部分
-        pass
-
+myTrackTransfrom = TrackTransfrom()
 
 if __name__ == "__main__":
 
-    mt = MyTrack()
-
-    x, y = mt.get_circle([100,0], [0,100], [0, 0], 3.14/2, 1)
-    mt.plot_test(x, y)
+    x, y = myTrackTransfrom.get_circle([10,0], [0,10], [0, 0], 3.14/2, 1)
+    myTrackTransfrom.plot_test(x, y)

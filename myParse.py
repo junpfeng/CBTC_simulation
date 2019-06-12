@@ -24,7 +24,7 @@ def str2coordinate(str):
 
 def str2num(str):
     """将字符串变成整数"""
-    if str.isdecimal() :
+    if str.isdecimal():
         return int(str)
     else:
         return float(str)
@@ -32,6 +32,12 @@ def str2num(str):
 def file2list(filename):
     """将zby的输出文件中，提取出有用的一列"""
     pass  # 等文件GUI做出来再做
+
+def angle2radian(str):
+    angle = float(str)
+    radian = angle/180*3.14
+    return radian
+
 
 if __name__ == "__main__":
 

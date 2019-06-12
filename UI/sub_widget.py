@@ -4,8 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from myData import *
 from myAlogrithm import *
-import myMainWindow as mmw
-
+import myMainWindow as myWM
 
 class SubWidgetInterf(QWidget):
     """干扰基站子窗口"""
@@ -194,6 +193,8 @@ class SubWidgetScene(QWidget):
 
 
 class SubWidgetTrack(QWidget):
+    # 信号必须是类属性才行
+    graph_signal = pyqtSignal()
     """轨道添加子窗口"""
     def __init__(self):
         super().__init__()
@@ -201,9 +202,11 @@ class SubWidgetTrack(QWidget):
         self.resize(200, 100)
         self.track_widget()  # 实际上，就相当于将track_widget里的内容直接定义在__init__方法中
         self.index = 0
+        # 定义信号
 
+#        self.graph_signal.connect(myWM.mw.slot_graph_paint())
 
-    def track_widget(self):
+    def track_widget(self, type="圆弧型", begin="(0,0)", end="(100,100)", center="(0,100)", degree="90"):
 
         # 建立一个珊格布局对象
         layout = QFormLayout()
@@ -243,6 +246,14 @@ class SubWidgetTrack(QWidget):
         self.button_degree.clicked.connect(self.slot_button_degree)
         self.lineEdit_degree = QLineEdit()
         layout.addRow(self.button_degree, self.lineEdit_degree)
+
+        # 设置默认值
+        self.lineEdit_type.setText(type)
+        self.lineEdit_begin.setText(begin)
+        self.lineEdit_end.setText(end)
+        self.lineEdit_center.setText(center)
+        self.lineEdit_degree.setText(degree)
+
 
         # 确定 取消
         self.button_sure = QPushButton(self)
@@ -296,21 +307,21 @@ class SubWidgetTrack(QWidget):
 
     def slot_track_sure(self):
         print("sure")
-        if self.lineEdit_type == "圆弧型":
+        if self.lineEdit_type.text() == "圆弧型":
             myDataContainer.set_track_data(self.index,
                                            self.lineEdit_type.text(),
                                             self.lineEdit_begin.text(),
                                             self.lineEdit_end.text(),
                                             center=self.lineEdit_center.text(),
                                             degree=self.lineEdit_degree.text())
-            [track_x, track_y] = myDataContainer.get_tracak_list(self.index)
-            mmw.graph_paint(track_x, track_y)
+
             # 将这些数据绘制轨道图
             self.index = self.index + 1
 
 
         else:
-            myDataContainer.get_track_data(self.lineEdit_type,
+            myDataContainer.set_track_data(self.index,
+                                           self.lineEdit_type,
                                            self.lineEdit_begin.text(),
                                            self.lineEdit_end.text())
         """在graph上绘制出路线,这里的绘制全部是散点图
