@@ -1,10 +1,5 @@
-import sys
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
 from myData import *
-from myAlogrithm import *
-import myMainWindow as myWM
+
 
 class SubWidgetInterf(QWidget):
     """干扰基站子窗口"""

@@ -13,7 +13,7 @@ class TrackTransfrom(object):
                  circle_list=list(range(5)),
                  track_dic={},
                  step=5,
-                 interval=120,
+                 interval=120,  # AP间隔
                  tracknum=1):
         self.__LineList = line_list
         self.__CircleList = circle_list

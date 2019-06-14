@@ -3,7 +3,6 @@ import myData
 import pyqtgraph as pg
 import sys
 from PyQt5.QtCore import *
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 # -------子窗口类--------
@@ -100,9 +99,9 @@ class SubWidgetRec(QWidget):
     def slot_button_sure(self):
         print("sure")
         myData.myDataContainer.get_Rec_data(self.lineEdit_gain.text(),
-                                     self.lineEdit_sensitivity.text(),
-                                     self.lineEdit_SIR.text(),
-                                     self.lineEdit_Outage.text())
+                                            self.lineEdit_sensitivity.text(),
+                                            self.lineEdit_SIR.text(),
+                                            self.lineEdit_Outage.text())
     def slot_button_cancel(self):
         print("cancel")
 
@@ -149,9 +148,9 @@ class SubWidgetAP(QWidget):
     def slot_button_sure(self):
         print("sure")
         myData.myDataContainer.get_AP_data(self.lineEdit_power.text(),
-                                    self.lineEdit_gain.text(),
-                                    self.lineEdit_limit.text(),
-                                    self.lineEdit_interval.text())
+                                           self.lineEdit_gain.text(),
+                                           self.lineEdit_limit.text(),
+                                           self.lineEdit_interval.text())
 
     def slot_button_cancel(self):
         print("cancel")
@@ -310,11 +309,11 @@ class SubWidgetTrack(QWidget):
         print("sure")
         if self.lineEdit_type.text() == "圆弧型":
             myData.myDataContainer.set_track_data(self.index,
-                                           self.lineEdit_type.text(),
-                                            self.lineEdit_begin.text(),
-                                            self.lineEdit_end.text(),
-                                            center=self.lineEdit_center.text(),
-                                            degree=self.lineEdit_degree.text())#self.lineEdit_degree.text())
+                                                  self.lineEdit_type.text(),
+                                                  self.lineEdit_begin.text(),
+                                                  self.lineEdit_end.text(),
+                                                  center=self.lineEdit_center.text(),
+                                                  degree=self.lineEdit_degree.text())#self.lineEdit_degree.text())
             # 将这些数据绘制轨道图
             x, y = myData.myDataContainer.get_track_list(index=self.index)
             mw.graph_paint(x, y)
@@ -325,17 +324,19 @@ class SubWidgetTrack(QWidget):
         else:
             myData.myDataContainer.set_track_data(self.index,
                                                   self.lineEdit_type.text(),
-                                           self.lineEdit_begin.text(),
-                                           self.lineEdit_end.text())
+                                                  self.lineEdit_begin.text(),
+                                                  self.lineEdit_end.text())
             """在graph上绘制出路线,这里的绘制全部是散点图因此，下面绘图函数的输入应当是路线散点"""
             x, y = myData.myDataContainer.get_track_list(index=self.index)
             mw.graph_paint(x, y)
             self.index = self.index + 1
+        self.close()  # 关闭窗口
 
 
 
     def slot_track_cancel(self):
         print("cancel")
+        self.close()
 
     def slot_track_delete(self):
         print("delete")
