@@ -308,26 +308,26 @@ class SubWidgetTrack(QWidget):
     def slot_track_sure(self):
         print("sure")
         if self.lineEdit_type.text() == "圆弧型":
-            myData.myDataContainer.set_track_data(self.index,
+            myData.myController.set_track_data(self.index,
                                                   self.lineEdit_type.text(),
                                                   self.lineEdit_begin.text(),
                                                   self.lineEdit_end.text(),
                                                   center=self.lineEdit_center.text(),
                                                   degree=self.lineEdit_degree.text())#self.lineEdit_degree.text())
             # 将这些数据绘制轨道图
-            x, y = myData.myDataContainer.get_track_list(index=self.index)
+            x, y = myData.myController.get_track_list(index=self.index)
             mw.graph_paint(x, y)
             self.index = self.index + 1
 
 
 
         else:
-            myData.myDataContainer.set_track_data(self.index,
+            myData.myController.set_track_data(self.index,
                                                   self.lineEdit_type.text(),
                                                   self.lineEdit_begin.text(),
                                                   self.lineEdit_end.text())
             """在graph上绘制出路线,这里的绘制全部是散点图因此，下面绘图函数的输入应当是路线散点"""
-            x, y = myData.myDataContainer.get_track_list(index=self.index)
+            x, y = myData.myController.get_track_list(index=self.index)
             mw.graph_paint(x, y)
             self.index = self.index + 1
         self.close()  # 关闭窗口

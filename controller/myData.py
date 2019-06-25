@@ -41,8 +41,8 @@ class DataContainer():
         self.AP_current = []  # 当前ap的部署方案
         # -----------Rec--------------
         self.Rec_gain = []
-        self.Rec_sensitivity = []
-        self.Rec_SIR = []
+        self.Rec_sensitivity = []  # 接收机的灵敏度
+        self.Rec_SIR = []  # 接收机的射频保护比(最小信干比)
         self.Rec_Outage = []
         # ----------interval----------
         self.interf_power_1 = []
@@ -54,6 +54,12 @@ class DataContainer():
         self.fc = _fc  # 光速
         self.f0 = _f0  # 路径损耗参考距离
         self.n = _n  # 路径损耗指数
+        self.threshold = 0.02  # 中断概率的最大阈值
+        # 计算中断概率需要知道信号的方差
+        self.sgma_AP = 2.5  # 目前先采用默认的大小
+        self.sgma_interf1 = 2.5  # 目前先采用默认的大小
+        self.sgma_interf1 = 2.5  # 目前先采用默认的大小
+
 
     # ------将直接获取的起点终点轨道坐标转换为轨道间隔坐标-----------
     def get_track_list(self, index=0):
