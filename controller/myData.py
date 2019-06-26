@@ -11,7 +11,8 @@ class DataContainer():
     数据统统进行封装"""
     def __init__(self, _fc=3e8, _f0=1, _n = 3):
         """ TODO 属性都是列表，列表中的每个元素都是存放一批数据
-        简单来说，相当于二维列表"""
+        简单来说，相当于二维列表
+        从图形界面接收的数据一般是字符串，存到这个类内全部要先转为数字或者其他对应的数据类型"""
         self.index = 0
         #-------------track------------
         self.type = []
@@ -108,11 +109,11 @@ class DataContainer():
 
     def set_AP_data(self, power, gain, limit, interval):
         """获取AP参数"""
-        self.AP_power.append(power)
-        self.AP_gain.append(gain)
-        self.AP_limit.append(limit)
+        self.AP_power.append(str2num(power))
+        self.AP_gain.append(str2num(gain))
+        self.AP_limit.append(str2num(limit))
         self.get_AP_Max()
-        self.AP_interval.append(interval)
+        self.AP_interval.append(str2num(interval))
 
     def del_AP_data_all(self):
         """删除AP参数"""
@@ -123,10 +124,10 @@ class DataContainer():
 
     def set_Rec_data(self, gain, sensitivity, SIR, Outage):
         """获取接收机参数"""
-        self.Rec_gain.append(gain)
-        self.Rec_sensitivity.append(sensitivity)
-        self.Rec_SIR.append(SIR)
-        self.Rec_Outage.append(Outage)
+        self.Rec_gain.append(str2num(gain))
+        self.Rec_sensitivity.append(str2num(sensitivity))
+        self.Rec_SIR.append(str2num(SIR))
+        self.Rec_Outage.append(str2num(Outage))
 
     def del_Rec_data_all(self):
         """删除接收机参数"""
@@ -135,24 +136,25 @@ class DataContainer():
         self.Rec_SIR.clear()
         self.Rec_Outage.clear()
 
-    def set_interval_data(self, power_1, power_2, coordinate_1, coordinate_2):
+    def set_interf_data(self, power_1, power_2, coordinate_1, coordinate_2):
         """获取干扰参数"""
-        self.interf_power_1.append(power_1)
-        self.interf_power_2.append(power_2)
-        self.interf_coordinate_1.append(coordinate_1)
-        self.interf_coordinate_2.append(coordinate_2)
+        self.interf_power_1.append(str2num(power_1))
+        self.interf_power_2.append(str2num(power_2))
+        self.interf_coordinate_1.append(str2coordinate(coordinate_1))
+        self.interf_coordinate_2.append(str2coordinate(coordinate_2))
 
-    def del_interval_data_all(self):
+    def del_interf_data_all(self):
         """删除干扰参数"""
         self.interf_power_1.clear()
         self.interf_power_2.clear()
         self.interf_coordinate_1.clear()
         self.interf_coordinate_2.clear()
 
+# ---------------------- get 系列函数 ------------------------------
     def get_AP_Max(self):
         n = self.AP_interval/self.step  # 一个间隔之间有n个测试点
         self.step_num[self.index] = len(self.track_list_x[self.index])
-        self.AP_Max[self.index] = self.step_num[self.index]/n;
+        self.AP_Max[self.index] = self.step_num[self.index]/n
         return self.AP_Max[self.index]
 
     def get_AP_list(self):
@@ -166,6 +168,12 @@ class DataContainer():
         self.AP_xy.append(_xy)  # AP_xy是一个列表，每个元素是所有坐标列表
 
         return self.AP_x, self.AP_y, self.AP_xy
+
+    def get_interf_list(self):
+        """获取干扰点的坐标的x列表和y列表"""
+        _interf_x_list = [self.interf_coordinate_1[self.index][0], self.interf_coordinate_2[self.index][0]]
+        _interf_y_list = [self.interf_coordinate_1[self.index][1], self.interf_coordinate_2[self.index][1]]
+        return _interf_x_list, _interf_y_list
 
     def get_AP_deploy(self, M):
         """获取AP所有可能的部署方案坐标

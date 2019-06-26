@@ -107,7 +107,7 @@ class SubWidgetAP(QWidget):
         self.resize(200, 200)
         self.AP_widget()
 
-    def AP_widget(self):
+    def AP_widget(self, AP_power=44.8, AP_gain=13, AP_limit=3, AP_interval=60):
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30,30,200,200))
         """AP参数设置有4个，一个是发射功率，发射增益
@@ -116,10 +116,17 @@ class SubWidgetAP(QWidget):
         self.label_gain = QLabel(self)
         self.label_limit = QLabel(self)
         self.label_interval = QLabel(self)
+
+        # 设置默认值
         self.lineEdit_power = QLineEdit(self)
+        self.lineEdit_power.setText(str(AP_power))
         self.lineEdit_gain = QLineEdit(self)
+        self.lineEdit_gain.setText(str(AP_gain))
         self.lineEdit_limit = QLineEdit(self)
+        self.lineEdit_limit.setText(str(AP_limit))
         self.lineEdit_interval = QLineEdit(self)
+        self.lineEdit_interval.setText(str(AP_interval))
+
         self.button_sure = QPushButton(self)
         self.button_cancel = QPushButton(self)
         # 添加名称

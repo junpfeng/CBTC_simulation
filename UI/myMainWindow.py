@@ -15,7 +15,8 @@ class SubWidgetInterf(QWidget):
         self.resize(200, 200)
         self.Interf_widget()
 
-    def Interf_widget(self):
+    def Interf_widget(self, Interf1_coordinate=(-150, 150), Interf2_coordinate=(150, -80), Interf1_power=30, Interf2_power=30):
+        """注意这里的坐标使用圆括号"""
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30, 30, 200, 200))
         """干扰基站的参数有四个：两个坐标和两个发射功率"""
@@ -27,20 +28,35 @@ class SubWidgetInterf(QWidget):
         self.lineEdit_power_2 = QLineEdit(self)
         self.button_coordinate_2 = QPushButton(self)
         self.lineEdit_coordinate_2 = QLineEdit(self)
+        self.button_sure = QPushButton(self)
+        self.button_cancel = QPushButton(self)
+
+        # 添加默认值
+        self.lineEdit_coordinate_1.setText(str(Interf1_coordinate))
+        self.lineEdit_coordinate_2.setText(str(Interf2_coordinate))
+        self.lineEdit_power_1.setText(str(Interf1_power))
+        self.lineEdit_power_2.setText(str(Interf2_power))
+
         # 添加名称
         self.label_power_1.setText("第一个干扰功率")
         self.label_power_2.setText("第二个干扰功率")
         self.button_coordinate_1.setText("第一个干扰坐标")
         self.button_coordinate_2.setText("第一个干扰坐标")
+        self.button_sure.setText("确定")
+        self.button_cancel.setText("取消")
+
         # 按键绑定槽函数
         self.button_coordinate_1.clicked.connect(self.slot_button_coordinate_1)
         self.button_coordinate_2.clicked.connect(self.slot_button_coordinate_2)
+        self.button_sure.clicked.connect(self.slot_button_sure)
+        self.button_cancel.clicked.connect(self.slot_button_cancel)
 
         # 加入珊格布局
         layout.addRow(self.label_power_1, self.lineEdit_power_1)
         layout.addRow(self.label_power_2, self.lineEdit_power_2)
         layout.addRow(self.button_coordinate_1, self.lineEdit_coordinate_1)
         layout.addRow(self.button_coordinate_2, self.lineEdit_coordinate_2)
+        layout.addRow(self.button_sure, self.button_cancel)
         # 启动珊格布局
         self.setLayout(layout)
 
@@ -56,6 +72,20 @@ class SubWidgetInterf(QWidget):
         if ok and text:
             self.lineEdit_end.setText(text)
 
+    def slot_button_sure(self):
+        print("确定")
+        myData.myController.set_interf_data(self.lineEdit_power_1.text(),
+                                            self.lineEdit_power_2.text(),
+                                            self.lineEdit_coordinate_1.text(),
+                                            self.lineEdit_coordinate_2.text())
+        # 将这些数据绘制轨道图
+        x, y = myData.myController.get_interf_list()
+        mw.graph_paint(x, y)
+
+    def slot_button_cancel(self):
+        print("取消")
+
+
 class SubWidgetRec(QWidget):
     """接收机参数子窗口"""
     def __init__(self):
@@ -64,7 +94,7 @@ class SubWidgetRec(QWidget):
         self.resize(200, 200)
         self.Rec_widget()
 
-    def Rec_widget(self):
+    def Rec_widget(self, Rec_gain=13, Rec_sen=-100, Rec_SIR=-5, Rec_Outage=0.02):
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30, 30, 200, 200))
         """接收机参数"""
@@ -80,6 +110,11 @@ class SubWidgetRec(QWidget):
         self.button_cancel = QPushButton(self)
         self.button_sure.clicked.connect(self.slot_button_sure)
         self.button_cancel.clicked.connect(self.slot_button_cancel)
+        # 添加默认值
+        self.lineEdit_gain.setText(str(Rec_gain))
+        self.lineEdit_sensitivity.setText(str(Rec_sen))
+        self.lineEdit_SIR.setText(str(Rec_SIR))
+        self.lineEdit_Outage.setText(str(Rec_Outage))
         # 添加名称
         self.label_gain.setText("接受增益dB")
         self.label_sensitivity.setText("灵敏度dBm")
@@ -98,7 +133,7 @@ class SubWidgetRec(QWidget):
 
     def slot_button_sure(self):
         print("sure")
-        myData.myDataContainer.get_Rec_data(self.lineEdit_gain.text(),
+        myData.myDataContainer.set_Rec_data(self.lineEdit_gain.text(),
                                             self.lineEdit_sensitivity.text(),
                                             self.lineEdit_SIR.text(),
                                             self.lineEdit_Outage.text())
@@ -113,7 +148,7 @@ class SubWidgetAP(QWidget):
         self.resize(200, 200)
         self.AP_widget()
 
-    def AP_widget(self):
+    def AP_widget(self, AP_power=44.8, AP_gain=13, AP_limit=3, AP_interval=60):
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30,30,200,200))
         """AP参数设置有4个，一个是发射功率，发射增益
@@ -122,10 +157,18 @@ class SubWidgetAP(QWidget):
         self.label_gain = QLabel(self)
         self.label_limit = QLabel(self)
         self.label_interval = QLabel(self)
+
         self.lineEdit_power = QLineEdit(self)
         self.lineEdit_gain = QLineEdit(self)
         self.lineEdit_limit = QLineEdit(self)
         self.lineEdit_interval = QLineEdit(self)
+
+        # 设置默认值
+        self.lineEdit_power.setText(str(AP_power))
+        self.lineEdit_gain.setText(str(AP_gain))
+        self.lineEdit_limit.setText(str(AP_limit))
+        self.lineEdit_interval.setText(str(AP_interval))
+
         self.button_sure = QPushButton(self)
         self.button_cancel = QPushButton(self)
         # 添加名称
@@ -147,7 +190,7 @@ class SubWidgetAP(QWidget):
     # ----------槽函数--------------
     def slot_button_sure(self):
         print("sure")
-        myData.myDataContainer.get_AP_data(self.lineEdit_power.text(),
+        myData.myDataContainer.set_AP_data(self.lineEdit_power.text(),
                                            self.lineEdit_gain.text(),
                                            self.lineEdit_limit.text(),
                                            self.lineEdit_interval.text())
@@ -187,7 +230,7 @@ class SubWidgetScene(QWidget):
     #--------槽函数群----------------------
     def slot_button_sure(self):
         print("sure")
-        myData.myDataContainer.get_scene_data(self.combox_scene.currentText())
+        myData.myDataContainer.set_scene_data(self.combox_scene.currentText())
 
     def slot_button_cancel(self):
         print("cancel")
@@ -377,9 +420,12 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         # 干扰基站参数设置按钮
         self.button_interf.clicked.connect(self.slot_button_interf)
 
+        # 开始仿真按钮
+        self.button_run.clicked.connect(self.slot_button_run)
+
    # 设置画图界面
     def graph_paint(self, x_list, y_list, symbol="o"):
-
+        """ x_list和y_list分别是x轴和y轴的数据列表 """
         self.myPlt.plot(x_list, y_list, pen=None,
                   name="Red curve", symbol=symbol)
 
@@ -410,6 +456,10 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
     def slot_graph_paint(self):
         list_x, list_y = myData.myDataContainer.get_track_list()
         self.graph_paint(list_x, list_y)
+
+    def slot_button_run(self):
+        print("开始仿真")
+
 
 
 """总结可以作为符号的字符：o、x、+"""
