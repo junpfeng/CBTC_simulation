@@ -9,7 +9,7 @@ import itertools  # 排列组合公式
 class DataContainer():
     """将图形界面输入的各种
     数据统统进行封装"""
-    def __init__(self, _fc=3e8, _f0=1, _n = 3):
+    def __init__(self, _fc=3e8, _f0=1, _n=3, _step=5):
         """ TODO 属性都是列表，列表中的每个元素都是存放一批数据
         简单来说，相当于二维列表
         从图形界面接收的数据一般是字符串，存到这个类内全部要先转为数字或者其他对应的数据类型"""
@@ -20,8 +20,8 @@ class DataContainer():
         self.end = []
         self.center = []
         self.degree = []  # 圆弧轨道的弧度
-        self.step = []  # 测试点间隔
-        self.step_num = []  # 测试点数量
+        self.step = _step  # 测试点间隔
+        self.step_num = 0  # 测试点数量
         # 这个是经过计算的轨道的坐标的x轴列表
         # TODO 相邻之间的两个点之间的距离是self.step
         self.track_list_x = []  # 轨道测试点的x轴坐标列表
@@ -33,9 +33,9 @@ class DataContainer():
         # -----------AP---------------
         self.AP_power = []
         self.AP_gain = []
-        self.AP_limit = []
-        self.AP_Max = []
-        self.AP_interval = []
+        self.AP_limit = 0
+        self.AP_Max = 0
+        self.AP_interval = 0
         self.AP_x = []  # 预设的可能的AP的横坐标列表
         self.AP_y = []
         self.AP_xy = []  # 预设的可能的AP组合成坐标形式的列表
@@ -81,11 +81,12 @@ class DataContainer():
             self.track_list_y.append(_y)
             return [self.track_list_x[index], self.track_list_y[index]]
 
+
     # ------从gui界面获取数据的算法-----------------------------
-    def set_track_data(self, index, type, begin, end, center="/", degree="/"):
+    def set_track_data(self, index, _type, begin, end, center="/", degree="/"):
         """包括：直线型轨道和圆弧型轨道"""
         self.index = index  # 整型
-        self.type.append(type)  # 字符串
+        self.type.append(_type)  # 字符串
         self.begin.append(str2coordinate(begin))  # 得到的是字符串，转整型
         self.end.append(str2coordinate(end))
         self.center.append(str2coordinate(center))
@@ -111,15 +112,17 @@ class DataContainer():
         """获取AP参数"""
         self.AP_power.append(str2num(power))
         self.AP_gain.append(str2num(gain))
-        self.AP_limit.append(str2num(limit))
+        self.AP_limit = str2num(limit)
+        self.AP_interval = str2num(interval)
+        # 得把get_AP_Max放在最后，否则无法使用他后面的数据
         self.get_AP_Max()
-        self.AP_interval.append(str2num(interval))
+
 
     def del_AP_data_all(self):
         """删除AP参数"""
         self.AP_power.clear()
         self.AP_gain.clear()
-        self.AP_limit.clear()
+        #self.AP_limit.clear()
         self.AP_interval.clear()
 
     def set_Rec_data(self, gain, sensitivity, SIR, Outage):
@@ -153,19 +156,22 @@ class DataContainer():
 # ---------------------- get 系列函数 ------------------------------
     def get_AP_Max(self):
         n = self.AP_interval/self.step  # 一个间隔之间有n个测试点
-        self.step_num[self.index] = len(self.track_list_x[self.index])
-        self.AP_Max[self.index] = self.step_num[self.index]/n
-        return self.AP_Max[self.index]
+        self.step_num = len(self.track_list_x[self.index])
+        self.AP_Max = int(self.step_num/n)
+        return self.AP_Max
 
     def get_AP_list(self):
         """获取所有AP预设点的坐标信息"""
-        self.AP_x.append(np.arange(self.begin[self.index][0], self.begin[self.index][1], self.AP_interval/self.step))
-        self.AP_y.append(np.arange(self.end[self.index][0], self.end[self.index][1], self.AP_interval / self.step))
+        # AP的坐标由测试点的坐标来确定，测试点的坐标间隔是step，那么interval/step个测试点之间正好相距interval
+        _AP_range = np.arange(0, len(self.track_list_x[self.index]), int(self.AP_interval/self.step))  # 求出预设坐标的索引列表
+        for i in _AP_range:
+            self.AP_x.append(self.track_list_x[self.index][i])
+            self.AP_y.append(self.track_list_y[self.index][i])
         _xy = []
-        for i in range(len(self.AP_x[self.index])):
-            _xy.append([self.AP_x[self.index][i], self.AP_y[self.index[i]]])
+        for i in range(len(self.AP_x)):
+            _xy.append([self.AP_x[i], self.AP_y[i]])
 
-        self.AP_xy.append(_xy)  # AP_xy是一个列表，每个元素是所有坐标列表
+        self.AP_xy = _xy  # AP_xy是一个列表，每个元素是所有坐标列表
 
         return self.AP_x, self.AP_y, self.AP_xy
 
@@ -181,9 +187,11 @@ class DataContainer():
         返回值是_AP_current是列表a，[[1,2],[2,3],...[x,y]]
         列表a的每个元素由若干个坐标(2个元素的列表)组成
         而self.AP_current则是又若干个_AP_current组成"""
+        self.get_AP_list()
         _AP_len = len(self.AP_x)
-        _AP_current = list(itertools.combinations(self.AP_xy[self.index], M))
-        self.AP_current.append(_AP_current)
+        _AP_current = list(itertools.combinations(self.AP_xy, M))  # 排列组合算法
+        # TODO 排列组合的输出是什么形式iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii的
+        self.AP_current.append(_AP_current)  # AP_current存放了
         return _AP_current
 
 

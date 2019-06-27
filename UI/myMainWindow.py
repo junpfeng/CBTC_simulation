@@ -4,6 +4,7 @@ import pyqtgraph as pg
 import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
+import model.bf_search as bf
 
 # -------子窗口类--------
 
@@ -133,7 +134,7 @@ class SubWidgetRec(QWidget):
 
     def slot_button_sure(self):
         print("sure")
-        myData.myDataContainer.set_Rec_data(self.lineEdit_gain.text(),
+        myData.myController.set_Rec_data(self.lineEdit_gain.text(),
                                             self.lineEdit_sensitivity.text(),
                                             self.lineEdit_SIR.text(),
                                             self.lineEdit_Outage.text())
@@ -148,7 +149,7 @@ class SubWidgetAP(QWidget):
         self.resize(200, 200)
         self.AP_widget()
 
-    def AP_widget(self, AP_power=44.8, AP_gain=13, AP_limit=3, AP_interval=60):
+    def AP_widget(self, AP_power=44.8, AP_gain=13, AP_limit=1, AP_interval=60):
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30,30,200,200))
         """AP参数设置有4个，一个是发射功率，发射增益
@@ -170,7 +171,9 @@ class SubWidgetAP(QWidget):
         self.lineEdit_interval.setText(str(AP_interval))
 
         self.button_sure = QPushButton(self)
+        self.button_sure.clicked.connect(self.slot_button_sure)
         self.button_cancel = QPushButton(self)
+        self.button_cancel.clicked.connect(self.slot_button_cancel)
         # 添加名称
         self.label_power.setText("发射功率dBm")
         self.label_gain.setText("发射增益dB")
@@ -190,7 +193,7 @@ class SubWidgetAP(QWidget):
     # ----------槽函数--------------
     def slot_button_sure(self):
         print("sure")
-        myData.myDataContainer.set_AP_data(self.lineEdit_power.text(),
+        myData.myController.set_AP_data(self.lineEdit_power.text(),
                                            self.lineEdit_gain.text(),
                                            self.lineEdit_limit.text(),
                                            self.lineEdit_interval.text())
@@ -230,7 +233,7 @@ class SubWidgetScene(QWidget):
     #--------槽函数群----------------------
     def slot_button_sure(self):
         print("sure")
-        myData.myDataContainer.set_scene_data(self.combox_scene.currentText())
+        myData.myController.set_scene_data(self.combox_scene.currentText())
 
     def slot_button_cancel(self):
         print("cancel")
@@ -459,6 +462,8 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
 
     def slot_button_run(self):
         print("开始仿真")
+        bf.myModel.bf_search()
+
 
 
 
