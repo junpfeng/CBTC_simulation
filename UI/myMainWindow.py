@@ -16,7 +16,7 @@ class SubWidgetInterf(QWidget):
         self.resize(200, 200)
         self.Interf_widget()
 
-    def Interf_widget(self, Interf1_coordinate=(-150, 150), Interf2_coordinate=(150, -80), Interf1_power=30, Interf2_power=30):
+    def Interf_widget(self, Interf1_coordinate=(100, 110), Interf2_coordinate=(0, -8), Interf1_power=30, Interf2_power=30):
         """注意这里的坐标使用圆括号"""
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30, 30, 200, 200))
@@ -423,11 +423,13 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         # 干扰基站参数设置按钮
         self.button_interf.clicked.connect(self.slot_button_interf)
 
+        # 确认配置按钮
+        self.button_import.clicked.connect(self.slot_button_import)
         # 开始仿真按钮
         self.button_run.clicked.connect(self.slot_button_run)
 
    # 设置画图界面
-    def graph_paint(self, x_list, y_list, symbol="o"):
+    def graph_paint(self, x_list, y_list, symbol="x"):
         """ x_list和y_list分别是x轴和y轴的数据列表 """
         self.myPlt.plot(x_list, y_list, pen=None,
                   name="Red curve", symbol=symbol)
@@ -460,11 +462,25 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         list_x, list_y = myData.myDataContainer.get_track_list()
         self.graph_paint(list_x, list_y)
 
+    def slot_button_import(self):
+        print("import")
+        mySubWidgetTrack.slot_track_sure()
+        mySubWidgetRec.slot_button_sure()
+        mySubWidgetScene.slot_button_sure()
+        mySubWidgetAP.slot_button_sure()
+        mySubWidgetInterf.slot_button_sure()
+
     def slot_button_run(self):
         print("开始仿真")
+        # self.slot_button_track()
+        # self.slot_button_scene()
+        # self.slot_button_ap()
+        # self.slot_button_rec()
+        # self.slot_button_interf()
+
         bf.myModel.bf_search()
-
-
+        for i in range(len(myData.myController.AP_current)):
+            self.graph_paint([myData.myController.AP_current[i][0]], [myData.myController.AP_current[i][1]], symbol="o")
 
 
 """总结可以作为符号的字符：o、x、+"""

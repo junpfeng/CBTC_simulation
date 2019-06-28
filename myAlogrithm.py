@@ -28,6 +28,7 @@ class TrackTransfrom(object):
         plt.show()
 
     def get_shape(self, _type, begin=[], end=[], center=[], degree=1, step=1):
+        """返回值为圆弧或者直线型轨道坐标拆成x轴和y轴上的列表"""
         if _type == "圆弧型":
             return self.get_circle(begin=begin, end=end, center=center, degree=degree, step=step)
         elif _type == "直线型":
