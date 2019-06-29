@@ -58,8 +58,8 @@ class TrackTransfrom(object):
             x = x[2]
 
         # 以x为横坐标间隔下，可以将直线轨道分为多少段
-        num = abs(x2 - x1) / x  # 横坐标可以被分为多少段
-        xn = np.linspace(x1, x2, num=num)
+        num = int(abs(x2 - x1) / x)  # 横坐标可以被分为多少段
+        xn = np.linspace(x1, x2, num=num).tolist()
 
         # 计算所有x坐标对应的y坐标
         yn = list()

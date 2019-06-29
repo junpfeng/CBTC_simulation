@@ -47,10 +47,12 @@ class DataContainer():
         self.Rec_SIR = 0  # 接收机的射频保护比(最小信干比)
         self.Rec_Outage = 0
         # ----------interval----------
-        self.interf_power_1 = 0
-        self.interf_power_2 = 0
-        self.interf_coordinate_1 = []
-        self.interf_coordinate_2 = []
+        self.interf_power = 0
+        self.interf_coordinate = 0
+        self.interf_power_1 = -200  # -200就相当于没有干扰
+        self.interf_power_2 = -200  # -200就相当于没有干扰
+        self.interf_coordinate_1 = [-10, -10]  # 随机初始化坐标
+        self.interf_coordinate_2 = [-20, -20]  # 随即初始化坐标
 
         # ---------其他参数-------------
         self.fc = _fc  # 2.4G频率
@@ -73,10 +75,11 @@ class DataContainer():
         if _type == "圆弧型":
             _center = self.center[index]
             _degree = self.degree[index]
-            _x, _y = myTrackTransfrom.get_shape(_type, begin=_begin, end=_end, center=_center, degree=_degree, step=5)
+            _x, _y = myTrackTransfrom.get_shape(_type, begin=_begin, end=_end, center=_center, degree=_degree, step=self.step)
 
         else:
-            _x, _y = myTrackTransfrom.get_shape(_type, begin=_begin, end=_end, step=5)
+            _x, _y = myTrackTransfrom.get_shape(_type, begin=_begin, end=_end, step=self.step)
+            print(_x)
         self.track_list_x += _x#.append(_x)
         self.track_list_y += _y #.append(_y)
         for i in range(len(self.track_list_x)):
@@ -90,8 +93,13 @@ class DataContainer():
         self.type.append(_type)  # 字符串
         self.begin.append(str2coordinate(begin))  # 得到的是字符串，转整型
         self.end.append(str2coordinate(end))
-        self.center.append(str2coordinate(center))
-        self.degree.append(angle2radian(degree))
+        if _type == "圆弧型":
+            self.center.append(str2coordinate(center))
+            self.degree.append(angle2radian(degree))
+        else:  # 直线型
+            self.center.append("/")
+            self.degree.append("/")
+
 
     def del_track_data_all(self):
         """删除所有track相关的数据"""
@@ -140,19 +148,26 @@ class DataContainer():
         self.Rec_SIR.clear()
         self.Rec_Outage.clear()
 
-    def set_interf_data(self, power_1, power_2, coordinate_1, coordinate_2):
+    def set_interf_data(self, _power, _coordinate):
         """获取干扰参数"""
-        self.interf_power_1 = (str2num(power_1))
-        self.interf_power_2 = (str2num(power_2))
-        self.interf_coordinate_1 = str2coordinate(coordinate_1)
-        self.interf_coordinate_2 = str2coordinate(coordinate_2)
+        self.interf_power = str2num(_power)
+        self.interf_coordinate = str2coordinate(_coordinate)
+        # 虽然营造一种可以无限添加干扰的假象，不过实际上只能添加两个最多
+        if self.interf_power_1 == -200:  # 说明第一个还没被赋值,那么就先使用第一关
+            self.interf_power_1 = self.interf_power
+            self.interf_coordinate_1 = self.interf_coordinate
+        else:
+            self.interf_power_2 = self.interf_power
+            self.interf_coordinate_2 = self.interf_coordinate
 
     def del_interf_data_all(self):
         """删除干扰参数"""
-        self.interf_power_1.clear()
-        self.interf_power_2.clear()
-        self.interf_coordinate_1.clear()
-        self.interf_coordinate_2.clear()
+        self.interf_power = 0
+        self.interf_coordinate = 0
+        self.interf_power_1 = -200
+        self.interf_power_2 = -200
+        self.interf_coordinate_1 = [-10, -10]
+        self.interf_coordinate_2 = [-20, -20]
 
 # ---------------------- get 系列函数 ------------------------------
     def get_AP_Max(self):
@@ -196,6 +211,8 @@ class DataContainer():
         self.AP_current = _AP_current  # AP_current存放了
         return self.AP_current
 
+    def set_track_step(self, _step):
+        self.step = str2num(_step)
 
 
 

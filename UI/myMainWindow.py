@@ -6,6 +6,50 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import model.bf_search as bf
 
+# -----菜单栏窗口类-------
+
+class SubMenuConfig(QWidget):
+    """菜单栏子窗口"""
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("configure")
+        self.resize(200,200)
+        self.Config_widget()
+
+    def Config_widget(self, _track_step = 5):
+        # 珊格布局对象
+        layout = QFormLayout(self)
+        layout.setGeometry(QRect(30, 30, 200, 200))
+
+        self.label_step = QLabel(self)
+        self.lineEdit_step = QLineEdit(self)
+        self.lineEdit_step.setText(str(_track_step))
+        self.label_step.setText("轨道测试点间距")
+
+        self.button_sure = QPushButton(self)
+        self.button_cancel = QPushButton(self)
+        self.button_sure.setText("确定")
+        self.button_cancel.setText("取消")
+        # 放入珊格布局
+        layout.addRow(self.label_step, self.lineEdit_step)
+        layout.addRow(self.button_sure, self.button_cancel)
+
+        #  绑定槽函数
+        self.button_sure.clicked.connect(self.slot_button_sure)
+        self.button_cancel.clicked.connect(self.slot_button_cancel)
+
+    # ------- 槽函数群 ---------------
+    def slot_button_sure(self):
+        _step = self.lineEdit_step.text()
+        # 修改轨道测试点间距
+        myData.myController.set_track_step(_step=_step)
+        self.close()
+
+    def slot_button_cancel(self):
+        self.close()
+
+
+
 # -------子窗口类--------
 
 class SubWidgetInterf(QWidget):
@@ -15,76 +59,76 @@ class SubWidgetInterf(QWidget):
         self.setWindowTitle("干扰基站参数")
         self.resize(200, 200)
         self.Interf_widget()
+        self.interf_num = 0
 
     def Interf_widget(self, Interf1_coordinate=(100, 110), Interf2_coordinate=(0, -8), Interf1_power=30, Interf2_power=30):
         """注意这里的坐标使用圆括号"""
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30, 30, 200, 200))
         """干扰基站的参数有四个：两个坐标和两个发射功率"""
-        self.label_power_1 = QLabel(self)
-        self.lineEdit_power_1 = QLineEdit(self)
-        self.button_coordinate_1 = QPushButton(self)
-        self.lineEdit_coordinate_1 = QLineEdit(self)
-        self.label_power_2 = QLabel(self)
-        self.lineEdit_power_2 = QLineEdit(self)
-        self.button_coordinate_2 = QPushButton(self)
-        self.lineEdit_coordinate_2 = QLineEdit(self)
+        self.label_power = QLabel(self)
+        self.lineEdit_power = QLineEdit(self)
+        self.button_coordinate = QPushButton(self)
+        self.lineEdit_coordinate = QLineEdit(self)
+
         self.button_sure = QPushButton(self)
         self.button_cancel = QPushButton(self)
 
         # 添加默认值
-        self.lineEdit_coordinate_1.setText(str(Interf1_coordinate))
-        self.lineEdit_coordinate_2.setText(str(Interf2_coordinate))
-        self.lineEdit_power_1.setText(str(Interf1_power))
-        self.lineEdit_power_2.setText(str(Interf2_power))
+        self.lineEdit_coordinate.setText(str(Interf1_coordinate))
+        self.lineEdit_coordinate.setText(str(Interf2_coordinate))
+        self.lineEdit_power.setText(str(Interf1_power))
+        self.lineEdit_power.setText(str(Interf2_power))
 
         # 添加名称
-        self.label_power_1.setText("第一个干扰功率")
-        self.label_power_2.setText("第二个干扰功率")
-        self.button_coordinate_1.setText("第一个干扰坐标")
-        self.button_coordinate_2.setText("第一个干扰坐标")
-        self.button_sure.setText("确定")
+        self.label_power.setText("干扰源功率dbm")
+        self.button_coordinate.setText("干扰源坐标")
+        self.button_sure.setText("添加")
         self.button_cancel.setText("取消")
 
         # 按键绑定槽函数
-        self.button_coordinate_1.clicked.connect(self.slot_button_coordinate_1)
-        self.button_coordinate_2.clicked.connect(self.slot_button_coordinate_2)
+        self.button_coordinate.clicked.connect(self.slot_button_coordinate)
         self.button_sure.clicked.connect(self.slot_button_sure)
         self.button_cancel.clicked.connect(self.slot_button_cancel)
 
         # 加入珊格布局
-        layout.addRow(self.label_power_1, self.lineEdit_power_1)
-        layout.addRow(self.label_power_2, self.lineEdit_power_2)
-        layout.addRow(self.button_coordinate_1, self.lineEdit_coordinate_1)
-        layout.addRow(self.button_coordinate_2, self.lineEdit_coordinate_2)
+        layout.addRow(self.label_power, self.lineEdit_power)
+        layout.addRow(self.button_coordinate, self.lineEdit_coordinate)
         layout.addRow(self.button_sure, self.button_cancel)
         # 启动珊格布局
         self.setLayout(layout)
 
     # -----------槽函数----------------
-    def slot_button_coordinate_1(self):
+    def slot_button_coordinate(self):
         # 在方法内定义的局部变量
         text, ok = QInputDialog.getText(self, '输入坐标(x,y)', '第一个干扰坐标(x,y)')
         if ok and text:
             self.lineEdit_end.setText(text)
 
-    def slot_button_coordinate_2(self):
-        text, ok = QInputDialog.getText(self, '输入坐标(x,y)', '第二个干扰坐标(x,y)')
-        if ok and text:
-            self.lineEdit_end.setText(text)
-
     def slot_button_sure(self):
-        print("确定")
-        myData.myController.set_interf_data(self.lineEdit_power_1.text(),
-                                            self.lineEdit_power_2.text(),
-                                            self.lineEdit_coordinate_1.text(),
-                                            self.lineEdit_coordinate_2.text())
+        """只允许最多添加两个干扰点，目前。
+        使用一个干扰计数变量来记录"""
+
+        if self.interf_num >= 2:  # 防止直接调用这个函数，而不是通过信号和槽
+            return
+
+        myData.myController.set_interf_data(self.lineEdit_power.text(),
+                                            self.lineEdit_coordinate.text())
         # 将这些数据绘制轨道图
         x, y = myData.myController.get_interf_list()
-        mw.graph_paint(x, y)
+        mw.graph_paint([x[self.interf_num]], [y[self.interf_num]], symbol='+')
+
+        self.interf_num += 1  # 记录输入干扰基站的数量
+        if self.interf_num >= 2:  # 已经记录了两个干扰点了，
+            self.button_sure.setEnabled(False)
+        else:
+            self.button_sure.setEnabled(True)
+
+        self.close()  # 关闭窗口
 
     def slot_button_cancel(self):
         print("取消")
+        self.close()  # 关闭窗口
 
 
 class SubWidgetRec(QWidget):
@@ -117,10 +161,10 @@ class SubWidgetRec(QWidget):
         self.lineEdit_SIR.setText(str(Rec_SIR))
         self.lineEdit_Outage.setText(str(Rec_Outage))
         # 添加名称
-        self.label_gain.setText("接受增益dB")
+        self.label_gain.setText("接收增益dB")
         self.label_sensitivity.setText("灵敏度dBm")
         self.label_SIR.setText("信干比下限")
-        self.label_Outage.setText("中断概率下限")
+        self.label_Outage.setText("中断概率上限")
         self.button_sure.setText("确定")
         self.button_cancel.setText("取消")
         # 加入珊格布局
@@ -138,6 +182,8 @@ class SubWidgetRec(QWidget):
                                             self.lineEdit_sensitivity.text(),
                                             self.lineEdit_SIR.text(),
                                             self.lineEdit_Outage.text())
+        self.close()  # 关闭窗口
+
     def slot_button_cancel(self):
         print("cancel")
 
@@ -197,6 +243,7 @@ class SubWidgetAP(QWidget):
                                            self.lineEdit_gain.text(),
                                            self.lineEdit_limit.text(),
                                            self.lineEdit_interval.text())
+        self.close()  # 关闭窗口
 
     def slot_button_cancel(self):
         print("cancel")
@@ -215,7 +262,7 @@ class SubWidgetScene(QWidget):
         layout.setGeometry(QRect(30,30,200,200))
         # 场景选择，使用下拉框
         self.combox_scene = QComboBox(self)
-        self.combox_scene.addItems(("平原", "外部导入"))
+        self.combox_scene.addItems(("自由空间路径损耗", "外部导入"))
         layout.addRow(self.combox_scene)
 
         # 取消和确定
@@ -234,6 +281,7 @@ class SubWidgetScene(QWidget):
     def slot_button_sure(self):
         print("sure")
         myData.myController.set_scene_data(self.combox_scene.currentText())
+        self.close()  # 关闭窗口
 
     def slot_button_cancel(self):
         print("cancel")
@@ -250,8 +298,6 @@ class SubWidgetTrack(QWidget):
         self.track_widget()  # 实际上，就相当于将track_widget里的内容直接定义在__init__方法中
         self.index = 0
         # 定义信号
-
-#        self.graph_signal.connect(myWM.mw.slot_graph_paint())
 
     def track_widget(self, type="圆弧型", begin="(0,0)", end="(100,100)", center="(0,100)", degree="90"):
 
@@ -322,13 +368,23 @@ class SubWidgetTrack(QWidget):
         # 启动珊格布局
         self.setLayout(layout)
 
-
 #------------槽函数群-----------------------
     # ------轨道参数设置的输入对话框槽函数-------
     def slot_button_type(self):
         items = ("圆弧型", "直线型")
         item, ok = QInputDialog.getItem(self, '请选择轨道类型', '轨道类型列表', items)
         if ok and item:
+            if item == "直线型":  # 屏蔽圆心坐标和圆心角
+                self.lineEdit_center.setEnabled(False)
+                self.lineEdit_degree.setEnabled(False)
+                self.button_center.setEnabled(False)
+                self.button_degree.setEnabled(False)
+            else:
+                self.lineEdit_center.setEnabled(True)
+                self.lineEdit_degree.setEnabled(True)
+                self.button_center.setEnabled(True)
+                self.button_degree.setEnabled(True)
+
             self.lineEdit_type.setText(item)
 
     def slot_button_begin(self):
@@ -427,6 +483,8 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         self.button_import.clicked.connect(self.slot_button_import)
         # 开始仿真按钮
         self.button_run.clicked.connect(self.slot_button_run)
+        # 配置菜单栏
+        self.actionAP.triggered.connect(self.slot_menu_config)
 
    # 设置画图界面
     def graph_paint(self, x_list, y_list, symbol="x"):
@@ -481,7 +539,9 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         bf.myModel.bf_search()
         for i in range(len(myData.myController.AP_current)):
             self.graph_paint([myData.myController.AP_current[i][0]], [myData.myController.AP_current[i][1]], symbol="o")
-
+    # ------------ 菜单栏槽函数群 --------------
+    def slot_menu_config(self):
+        mySubMenuConfig.show()
 
 """总结可以作为符号的字符：o、x、+"""
 if __name__ == "__main__":
@@ -494,6 +554,7 @@ if __name__ == "__main__":
     mySubWidgetAP = SubWidgetAP()
     mySubWidgetRec = SubWidgetRec()
     mySubWidgetInterf = SubWidgetInterf()
+    mySubMenuConfig = SubMenuConfig()
 
     myQmainwindow = QMainWindow()
 

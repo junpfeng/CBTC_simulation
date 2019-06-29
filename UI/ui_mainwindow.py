@@ -126,7 +126,7 @@ class Ui_MainWindow(object):
         self.actiongo.setText(_translate("MainWindow", "go"))
         self.actionstop.setText(_translate("MainWindow", "stop"))
         self.actionpause.setText(_translate("MainWindow", "pause"))
-        self.actionAP.setText(_translate("MainWindow", "AP间隔"))
+        self.actionAP.setText(_translate("MainWindow", "轨道测试点间隔"))
 
 
 from pyqtgraph import GraphicsLayoutWidget

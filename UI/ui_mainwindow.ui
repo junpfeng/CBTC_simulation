@@ -200,7 +200,7 @@
   </action>
   <action name="actionAP">
    <property name="text">
-    <string>AP间隔</string>
+    <string>轨道测试点间隔</string>
    </property>
   </action>
  </widget>
