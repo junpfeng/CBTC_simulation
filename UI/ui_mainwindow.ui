@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>750</width>
+    <width>892</width>
     <height>500</height>
    </rect>
   </property>
@@ -74,20 +74,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="button_import">
-        <property name="text">
-         <string>确认配置</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="button_run">
-        <property name="text">
-         <string>开始仿真</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </widget>
@@ -117,13 +103,64 @@
      <cstring>button_track</cstring>
     </property>
    </widget>
+   <widget class="QWidget" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>750</x>
+      <y>30</y>
+      <width>120</width>
+      <height>411</height>
+     </rect>
+    </property>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>219</y>
+       <width>101</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QPushButton" name="button_import">
+        <property name="text">
+         <string>确认配置</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_run">
+        <property name="text">
+         <string>开始仿真</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="verticalLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>9</y>
+       <width>101</width>
+       <height>111</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QTextEdit" name="textEdit_disp"/>
+      </item>
+     </layout>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>750</width>
+     <width>892</width>
      <height>28</height>
     </rect>
    </property>

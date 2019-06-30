@@ -45,7 +45,8 @@ class TrackTransfrom(object):
         # 得到直线轨道方程
         b = sy.symbols("b")
         b = sy.solve(k*x1 + b - y1, b)
-        b = b[0]
+        b = b[0]  # b是一个列表，上面的一次方程，只会有一个解，因此只有一个元素，b[0]是取出其内容
+
         # 再根据步长，计算出步长所在点的坐标(勾股定理求解）
         # 由于直线上固定步长的横纵坐标间距是相同的，
         # 故只需要求出一段横坐标间隔，其他都一样
@@ -64,7 +65,7 @@ class TrackTransfrom(object):
         # 计算所有x坐标对应的y坐标
         yn = list()
         for i in range(len(xn)):
-            tmp = k*i + b
+            tmp = k*xn[i] + b
             yn.append(tmp)
 
         return [xn, yn]

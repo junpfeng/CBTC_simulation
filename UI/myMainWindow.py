@@ -299,7 +299,7 @@ class SubWidgetTrack(QWidget):
         self.index = 0
         # 定义信号
 
-    def track_widget(self, type="圆弧型", begin="(0,0)", end="(100,100)", center="(0,100)", degree="90"):
+    def track_widget(self, type="圆弧型", begin="(100,80)", end="(200,300)", center="(100,300)", degree="90"):
 
         # 建立一个珊格布局对象
         layout = QFormLayout()
@@ -351,7 +351,7 @@ class SubWidgetTrack(QWidget):
         # 确定 取消
         self.button_sure = QPushButton(self)
         self.button_sure.resize(100, 30)
-        self.button_sure.setText("确定")
+        self.button_sure.setText("添加")
         self.button_sure.clicked.connect(self.slot_track_sure)
         self.button_cancel = QPushButton(self)
         self.button_cancel.resize(100, 30)
