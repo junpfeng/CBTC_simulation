@@ -113,7 +113,7 @@ class DataContainer():
         """获取场景参数"""
         self.scene.append(scene)
 
-    def del_scene_data_all(self, scene):
+    def del_scene_data_all(self, scene=0):
         """删除场景参数"""
         self.scene.clear()
 
@@ -129,10 +129,10 @@ class DataContainer():
 
     def del_AP_data_all(self):
         """删除AP参数"""
-        self.AP_power.clear()
-        self.AP_gain.clear()
+        self.AP_power = 0
+        self.AP_gain = 0
         #self.AP_limit.clear()
-        self.AP_interval.clear()
+        self.AP_interval = 0
 
     def set_Rec_data(self, gain, sensitivity, SIR, Outage):
         """获取接收机参数"""
@@ -143,10 +143,10 @@ class DataContainer():
 
     def del_Rec_data_all(self):
         """删除接收机参数"""
-        self.Rec_gain.clear()
-        self.Rec_sensitivity.clear()
-        self.Rec_SIR.clear()
-        self.Rec_Outage.clear()
+        self.Rec_gain = 0
+        self.Rec_sensitivity = 0
+        self.Rec_SIR = 0
+        self.Rec_Outage = 0
 
     def set_interf_data(self, _power, _coordinate):
         """获取干扰参数"""

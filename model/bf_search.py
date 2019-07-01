@@ -36,6 +36,7 @@ class model():
         (参数原则，能传参的，绝不计算，加快运行速度）
         计算完成得到的结果："""
         self.pass_flg = 1  # pass_flg的标志置位
+        self.controller.get_AP_Max()  # 由于轨道的长度会
 
         # 对于每一种AP的数量
         # 之所以AP_Max要加1,是由于np.arange的运算性质决定

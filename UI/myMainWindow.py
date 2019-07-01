@@ -457,6 +457,7 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         pg.setConfigOption('foreground', 'd')
         # 初始化唯一的画笔
 
+
         # self.myMainWindow = QMainWindow()
         # self.my_setup(self.myMainWindow)
 
@@ -469,6 +470,7 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         self.setupUi(mainwindow)
         # 初始化画笔
         self.myPlt = self.mainGraph.addPlot(title="场景绘制")
+        
         """绑定按钮的槽函数"""
         # 轨道和场景参数设置按钮
         self.button_track.clicked.connect(self.slot_button_track)
@@ -483,14 +485,20 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         self.button_import.clicked.connect(self.slot_button_import)
         # 开始仿真按钮
         self.button_run.clicked.connect(self.slot_button_run)
+        # reset按钮
+        self.button_reset.clicked.connect(self.slot_button_reset)
         # 配置菜单栏
         self.actionAP.triggered.connect(self.slot_menu_config)
+
+        #------其他初始化设置------------
+        self.slot_edit_disp("运行中")
 
    # 设置画图界面
     def graph_paint(self, x_list, y_list, symbol="x"):
         """ x_list和y_list分别是x轴和y轴的数据列表 """
         self.myPlt.plot(x_list, y_list, pen=None,
-                  name="Red curve", symbol=symbol)
+                        name="Red curve", symbol=symbol)
+        self.myPlt.showGrid(x=True, y=True)
 
     # 槽函数群
     def slot_button_track(self):
@@ -530,18 +538,43 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
 
     def slot_button_run(self):
         print("开始仿真")
-        # self.slot_button_track()
-        # self.slot_button_scene()
-        # self.slot_button_ap()
-        # self.slot_button_rec()
-        # self.slot_button_interf()
-
+        # 一旦运行，必须reset之后才能重新运行
+        mw.button_run.setEnabled(False)
+        self.slot_edit_disp("仿真中...")
         bf.myModel.bf_search()
         for i in range(len(myData.myController.AP_current)):
             self.graph_paint([myData.myController.AP_current[i][0]], [myData.myController.AP_current[i][1]], symbol="o")
+        self.slot_edit_disp("仿真结束")
+
+    def slot_button_reset(self):
+        """1.清除控制器内的所有缓存数据、2.清空绘图界面、3.接触干扰基站的灰色按钮"""
+        # 轨道配置参数
+        myData.myController.del_Rec_data_all()
+        # 场景选择参数
+        myData.myController.del_scene_data_all()
+        # AP参数
+        myData.myController.del_AP_data_all()
+        # 接收机参数
+        myData.myController.del_Rec_data_all()
+        # 干扰基站参数
+        myData.myController.del_interf_data_all()
+        #清空绘图
+        self.myPlt.clear()  # 之所以没有方法提示，是因为他不知道该对象从哪个类来的
+
+        # 是能干扰基站添加按钮
+        mySubWidgetInterf.interf_num = 0
+        mySubWidgetInterf.button_sure.setEnabled(True)
+        # textedit 显示正在运行
+        self.slot_edit_disp("正在运行")
+        # 使能运行按钮
+        mw.button_run.setEnabled(True)
+
     # ------------ 菜单栏槽函数群 --------------
     def slot_menu_config(self):
         mySubMenuConfig.show()
+
+    def slot_edit_disp(self, _str):
+        self.textEdit_disp.setText(_str)
 
 """总结可以作为符号的字符：o、x、+"""
 if __name__ == "__main__":
