@@ -1,6 +1,4 @@
 import sys
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from myAlogrithm import *
 from myParse import *
@@ -89,6 +87,13 @@ class DataContainer():
     # ------从gui界面获取数据的算法-----------------------------
     def set_track_data(self, index, _type, begin, end, center="/", degree="/"):
         """包括：直线型轨道和圆弧型轨道"""
+        # ----首先判断，添加的轨道是否为同一段，如果是，就直接返回
+
+        if self.begin and _type == self.type[0] and str2coordinate(begin) == self.begin[0] \
+                and str2coordinate(end) == self.end[0]:
+            print("重复轨道")
+            return
+
         self.index = index  # 整型
         self.type.append(_type)  # 字符串
         self.begin.append(str2coordinate(begin))  # 得到的是字符串，转整型
@@ -108,6 +113,9 @@ class DataContainer():
         self.end.clear()
         self.center.clear()
         self.degree.clear()
+        self.track_list_xy.clear()
+        self.track_list_x.clear()
+        self.track_list_y.clear()
 
     def set_scene_data(self, scene):
         """获取场景参数"""

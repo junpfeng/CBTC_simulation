@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import model.bf_search as bf
 
+
 # -----菜单栏窗口类-------
 
 class SubMenuConfig(QWidget):
@@ -419,7 +420,7 @@ class SubWidgetTrack(QWidget):
             # 将这些数据绘制轨道图
             x, y = myData.myController.get_track_list(index=self.index)
             mw.graph_paint(x, y)
-            self.index = self.index + 1
+          #  self.index = self.index + 1
 
 
 
@@ -431,7 +432,6 @@ class SubWidgetTrack(QWidget):
             """在graph上绘制出路线,这里的绘制全部是散点图因此，下面绘图函数的输入应当是路线散点"""
             x, y = myData.myController.get_track_list(index=self.index)
             mw.graph_paint(x, y)
-            self.index = self.index + 1
         self.close()  # 关闭窗口
 
 
@@ -549,7 +549,7 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
     def slot_button_reset(self):
         """1.清除控制器内的所有缓存数据、2.清空绘图界面、3.接触干扰基站的灰色按钮"""
         # 轨道配置参数
-        myData.myController.del_Rec_data_all()
+        myData.myController.del_track_data_all()
         # 场景选择参数
         myData.myController.del_scene_data_all()
         # AP参数
