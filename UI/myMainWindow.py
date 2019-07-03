@@ -41,9 +41,13 @@ class SubMenuConfig(QWidget):
 
     # ------- 槽函数群 ---------------
     def slot_button_sure(self):
-        _step = self.lineEdit_step.text()
-        # 修改轨道测试点间距
-        myData.myController.set_track_step(_step=_step)
+        try:
+            _step = self.lineEdit_step.text()
+            # 修改轨道测试点间距
+            myData.myController.set_track_step(_step=_step)
+        except Exception as res:
+            mw.slot_edit_disp("configure输入出错：" + str(res))
+
         self.close()
 
     def slot_button_cancel(self):
@@ -109,21 +113,23 @@ class SubWidgetInterf(QWidget):
     def slot_button_sure(self):
         """只允许最多添加两个干扰点，目前。
         使用一个干扰计数变量来记录"""
+        try:
+            if self.interf_num >= 2:  # 防止直接调用这个函数，而不是通过信号和槽
+                return
 
-        if self.interf_num >= 2:  # 防止直接调用这个函数，而不是通过信号和槽
-            return
+            myData.myController.set_interf_data(self.lineEdit_power.text(),
+                                                self.lineEdit_coordinate.text())
+            # 将这些数据绘制轨道图
+            x, y = myData.myController.get_interf_list()
+            mw.graph_paint([x[self.interf_num]], [y[self.interf_num]], symbol='+')
 
-        myData.myController.set_interf_data(self.lineEdit_power.text(),
-                                            self.lineEdit_coordinate.text())
-        # 将这些数据绘制轨道图
-        x, y = myData.myController.get_interf_list()
-        mw.graph_paint([x[self.interf_num]], [y[self.interf_num]], symbol='+')
-
-        self.interf_num += 1  # 记录输入干扰基站的数量
-        if self.interf_num >= 2:  # 已经记录了两个干扰点了，
-            self.button_sure.setEnabled(False)
-        else:
-            self.button_sure.setEnabled(True)
+            self.interf_num += 1  # 记录输入干扰基站的数量
+            if self.interf_num >= 2:  # 已经记录了两个干扰点了，
+                self.button_sure.setEnabled(False)
+            else:
+                self.button_sure.setEnabled(True)
+        except Exception as res:
+            mw.slot_edit_disp("干扰基站参数输入错误：" + str(res))
 
         self.close()  # 关闭窗口
 
@@ -179,10 +185,14 @@ class SubWidgetRec(QWidget):
 
     def slot_button_sure(self):
         print("sure")
-        myData.myController.set_Rec_data(self.lineEdit_gain.text(),
-                                            self.lineEdit_sensitivity.text(),
-                                            self.lineEdit_SIR.text(),
-                                            self.lineEdit_Outage.text())
+        try:
+            myData.myController.set_Rec_data(self.lineEdit_gain.text(),
+                                                self.lineEdit_sensitivity.text(),
+                                                self.lineEdit_SIR.text(),
+                                                self.lineEdit_Outage.text())
+        except Exception as res:
+            mw.slot_edit_disp("接收机参数输入错误：" + str(res))
+
         self.close()  # 关闭窗口
 
     def slot_button_cancel(self):
@@ -240,10 +250,13 @@ class SubWidgetAP(QWidget):
     # ----------槽函数--------------
     def slot_button_sure(self):
         print("sure")
-        myData.myController.set_AP_data(self.lineEdit_power.text(),
-                                           self.lineEdit_gain.text(),
-                                           self.lineEdit_limit.text(),
-                                           self.lineEdit_interval.text())
+        try:
+            myData.myController.set_AP_data(self.lineEdit_power.text(),
+                                               self.lineEdit_gain.text(),
+                                               self.lineEdit_limit.text(),
+                                               self.lineEdit_interval.text())
+        except Exception as res:
+            mw.slot_edit_disp("AP参数输入出错：" + str(res))
         self.close()  # 关闭窗口
 
     def slot_button_cancel(self):
@@ -410,28 +423,28 @@ class SubWidgetTrack(QWidget):
 
     def slot_track_sure(self):
         print("sure")
-        if self.lineEdit_type.text() == "圆弧型":
-            myData.myController.set_track_data(self.index,
-                                                  self.lineEdit_type.text(),
-                                                  self.lineEdit_begin.text(),
-                                                  self.lineEdit_end.text(),
-                                                  center=self.lineEdit_center.text(),
-                                                  degree=self.lineEdit_degree.text())#self.lineEdit_degree.text())
-            # 将这些数据绘制轨道图
-            x, y = myData.myController.get_track_list(index=self.index)
-            mw.graph_paint(x, y)
-          #  self.index = self.index + 1
-
-
-
-        else:
-            myData.myController.set_track_data(self.index,
-                                                  self.lineEdit_type.text(),
-                                                  self.lineEdit_begin.text(),
-                                                  self.lineEdit_end.text())
-            """在graph上绘制出路线,这里的绘制全部是散点图因此，下面绘图函数的输入应当是路线散点"""
-            x, y = myData.myController.get_track_list(index=self.index)
-            mw.graph_paint(x, y)
+        try:
+            if self.lineEdit_type.text() == "圆弧型":
+                myData.myController.set_track_data(self.index,
+                                                      self.lineEdit_type.text(),
+                                                      self.lineEdit_begin.text(),
+                                                      self.lineEdit_end.text(),
+                                                      center=self.lineEdit_center.text(),
+                                                      degree=self.lineEdit_degree.text())#self.lineEdit_degree.text())
+                # 将这些数据绘制轨道图
+                x, y = myData.myController.get_track_list(index=self.index)
+                mw.graph_paint(x, y)
+              #  self.index = self.index + 1
+            else:
+                myData.myController.set_track_data(self.index,
+                                                      self.lineEdit_type.text(),
+                                                      self.lineEdit_begin.text(),
+                                                      self.lineEdit_end.text())
+                """在graph上绘制出路线,这里的绘制全部是散点图因此，下面绘图函数的输入应当是路线散点"""
+                x, y = myData.myController.get_track_list(index=self.index)
+                mw.graph_paint(x, y)
+        except Exception as res:
+            mw.slot_edit_disp("轨道参数输入出错：" + str(res))
         self.close()  # 关闭窗口
 
 
@@ -451,17 +464,10 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         还有要研究一下，使用super和直接使用QMainWindow.__init__()的区别
         此处若不使用super就会出错"""
         super().__init__()
-
         # 设置graph的前景色和背景色
         pg.setConfigOption('background', '#f0f0f0')
         pg.setConfigOption('foreground', 'd')
         # 初始化唯一的画笔
-
-
-        # self.myMainWindow = QMainWindow()
-        # self.my_setup(self.myMainWindow)
-
-        #self.myMainWindow.show()
 
     # mainwindow是传入的参数，一般为QMainWindow对象
     def my_setup(self, mainwindow):
@@ -483,7 +489,7 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
 
         # 确认配置按钮
         self.button_import.clicked.connect(self.slot_button_import)
-        # 开始仿真按钮
+        # 开始仿真按钮--这个单独作为一个线程
         self.button_run.clicked.connect(self.slot_button_run)
         # reset按钮
         self.button_reset.clicked.connect(self.slot_button_reset)
@@ -538,6 +544,10 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
 
     def slot_button_run(self):
         print("开始仿真")
+        # 防止没输入数据，就误操作按下运行
+        if myData.myController.is_track_empty() or myData.myController.is_AP_empty():
+            self.slot_edit_disp("请先配置参数")
+            return
         # 一旦运行，必须reset之后才能重新运行
         mw.button_run.setEnabled(False)
         self.slot_edit_disp("仿真中...")
@@ -576,23 +586,34 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
     def slot_edit_disp(self, _str):
         self.textEdit_disp.setText(_str)
 
+
+
+mySubWidgetTrack = SubWidgetTrack()
+mySubWidgetScene = SubWidgetScene()
+mySubWidgetAP = SubWidgetAP()
+mySubWidgetRec = SubWidgetRec()
+mySubWidgetInterf = SubWidgetInterf()
+mySubMenuConfig = SubMenuConfig()
+mw = MainWindow()
+
+
 """总结可以作为符号的字符：o、x、+"""
 if __name__ == "__main__":
     # 在建立窗口实例对象之前，必须建立QApplication对象，这是为什么
     app = QApplication(sys.argv).instance()
     # 只在模块文件内定义了一个全局的对象，其他文件内只使用该对象，而不创建新对象
     # 实际上就是一个单例对象
-    mySubWidgetTrack = SubWidgetTrack()
-    mySubWidgetScene = SubWidgetScene()
-    mySubWidgetAP = SubWidgetAP()
-    mySubWidgetRec = SubWidgetRec()
-    mySubWidgetInterf = SubWidgetInterf()
-    mySubMenuConfig = SubMenuConfig()
-
-    myQmainwindow = QMainWindow()
-
-    mw = MainWindow()
-    mw.my_setup(mw)
-    mw.show()
+    # mySubWidgetTrack = SubWidgetTrack()
+    # mySubWidgetScene = SubWidgetScene()
+    # mySubWidgetAP = SubWidgetAP()
+    # mySubWidgetRec = SubWidgetRec()
+    # mySubWidgetInterf = SubWidgetInterf()
+    # mySubMenuConfig = SubMenuConfig()
+    #
+    # myQmainwindow = QMainWindow()
+    #
+    # mw = MainWindow()
+    # mw.my_setup(mw)
+    # mw.show()
     app.exit(app.exec_())
 

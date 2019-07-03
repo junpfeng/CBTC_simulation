@@ -32,9 +32,9 @@ class DataContainer():
         # -----------AP---------------
         self.AP_power = 0
         self.AP_gain = 0
-        self.AP_limit = 0
+        self.AP_limit = 1
         self.AP_Max = 0
-        self.AP_interval = 0
+        self.AP_interval = 60
         self.AP_x = []  # 预设的可能的AP的横坐标列表
         self.AP_y = []
         self.AP_xy = []  # 预设的可能的AP组合成坐标形式的列表
@@ -139,8 +139,8 @@ class DataContainer():
         """删除AP参数"""
         self.AP_power = 0
         self.AP_gain = 0
-        #self.AP_limit.clear()
-        self.AP_interval = 0
+        self.AP_limit = 1
+        self.AP_interval = 60
 
     def set_Rec_data(self, gain, sensitivity, SIR, Outage):
         """获取接收机参数"""
@@ -222,7 +222,16 @@ class DataContainer():
     def set_track_step(self, _step):
         self.step = str2num(_step)
 
-
+    # 用于监控轨道是否都填入完整
+    def is_track_empty(self):
+        if not self.track_list_x and not self.track_list_y: # 如果轨道都是空的，就直接返回
+            return True
+        return False
+    # 用于监控AP是否填入完整
+    def is_AP_empty(self):
+        if self.AP_power == 0:
+            return True
+        return False
 
 app = QApplication(sys.argv).instance()
 myController = DataContainer() # 单例对象
