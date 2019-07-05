@@ -3,7 +3,7 @@ import sympy as sp  # 符号运算和微积分
 from myData import myController
 import itertools
 import math
-import scipy as scp
+import threading
 from scipy import integrate
 a = list(itertools.combinations([[1,2],[1,3],[1,4],[1,5],[1,6],[1,7],[1,8], [1,9]],4))  # 自动计算排列组合的模块
 print(a)
@@ -35,6 +35,8 @@ class model():
         输入参数：轨道的x和y轴坐标、轨道测试点的数量、干扰坐标、
         (参数原则，能传参的，绝不计算，加快运行速度）
         计算完成得到的结果："""
+        # mymutex = threading.Lock()
+        # mymutex.acquire()
         self.pass_flg = 1  # pass_flg的标志置位
         self.controller.get_AP_Max()  # 由于轨道的长度会
 
@@ -82,6 +84,7 @@ class model():
             if self.pass_flg == 1:
                 break  # 停止继续
 
+        # mymutex.release()
 
 
 

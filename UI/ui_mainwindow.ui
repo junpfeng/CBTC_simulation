@@ -219,34 +219,12 @@
      <height>28</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menufile">
-    <property name="title">
-     <string>file</string>
-    </property>
-    <addaction name="actionopen"/>
-    <addaction name="separator"/>
-    <addaction name="actionnew"/>
-    <addaction name="actionsave"/>
-    <addaction name="actionsave_as"/>
-   </widget>
-   <widget class="QMenu" name="menusimulation">
-    <property name="title">
-     <string>simulation</string>
-    </property>
-    <addaction name="actionrun"/>
-    <addaction name="separator"/>
-    <addaction name="actiongo"/>
-    <addaction name="actionstop"/>
-    <addaction name="actionpause"/>
-   </widget>
    <widget class="QMenu" name="menuconfigure">
     <property name="title">
      <string>configure</string>
     </property>
     <addaction name="actionAP"/>
    </widget>
-   <addaction name="menufile"/>
-   <addaction name="menusimulation"/>
    <addaction name="menuconfigure"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>

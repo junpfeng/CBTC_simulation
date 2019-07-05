@@ -5,6 +5,7 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import model.bf_search as bf
+import threading
 
 
 # -----菜单栏窗口类-------
@@ -146,7 +147,7 @@ class SubWidgetRec(QWidget):
         self.resize(200, 200)
         self.Rec_widget()
 
-    def Rec_widget(self, Rec_gain=13, Rec_sen=-100, Rec_SIR=-5, Rec_Outage=0.02):
+    def Rec_widget(self, Rec_gain=13, Rec_sen=-85, Rec_SIR=-5, Rec_Outage=0.02):
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30, 30, 200, 200))
         """接收机参数"""
@@ -542,6 +543,15 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         mySubWidgetAP.slot_button_sure()
         mySubWidgetInterf.slot_button_sure()
 
+    # 包装一个线程函数
+    def run_thread_func(self):
+        """本来下面的函数是直接写在slot_button_run里面的
+        不过，为了适应多线程，故包装为一个函数"""
+        bf.myModel.bf_search()
+        for i in range(len(myData.myController.AP_current)):
+            self.graph_paint([myData.myController.AP_current[i][0]], [myData.myController.AP_current[i][1]], symbol="o")
+        self.slot_edit_disp("仿真结束")
+
     def slot_button_run(self):
         print("开始仿真")
         # 防止没输入数据，就误操作按下运行
@@ -551,10 +561,13 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         # 一旦运行，必须reset之后才能重新运行
         mw.button_run.setEnabled(False)
         self.slot_edit_disp("仿真中...")
-        bf.myModel.bf_search()
-        for i in range(len(myData.myController.AP_current)):
-            self.graph_paint([myData.myController.AP_current[i][0]], [myData.myController.AP_current[i][1]], symbol="o")
-        self.slot_edit_disp("仿真结束")
+
+        # 使用多线程来运行这个比较耗时的部分
+        #myt01 = threading.Thread(target=self.run_thread_func)
+        #bf.myModel.bf_search()
+        self.run_thread_func()
+        ##myt01.start()
+
 
     def slot_button_reset(self):
         """1.清除控制器内的所有缓存数据、2.清空绘图界面、3.接触干扰基站的灰色按钮"""

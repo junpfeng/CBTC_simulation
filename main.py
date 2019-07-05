@@ -1,5 +1,4 @@
 from myMainWindow import *
-import threading
 ##----------- 目前程序运行从myMainWindow开始 ---------------
 # 在建立窗口实例对象之前，必须建立QApplication对象，这是为什么
 app = QApplication(sys.argv).instance()
