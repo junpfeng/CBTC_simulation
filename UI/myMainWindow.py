@@ -6,6 +6,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import model.bf_search as bf
 import threading
+import time
 
 
 # -----菜单栏窗口类-------
@@ -55,7 +56,6 @@ class SubMenuConfig(QWidget):
         self.close()
 
 
-
 # -------子窗口类--------
 
 class SubWidgetInterf(QWidget):
@@ -76,27 +76,22 @@ class SubWidgetInterf(QWidget):
         self.lineEdit_power = QLineEdit(self)
         self.button_coordinate = QPushButton(self)
         self.lineEdit_coordinate = QLineEdit(self)
-
         self.button_sure = QPushButton(self)
         self.button_cancel = QPushButton(self)
-
         # 添加默认值
         self.lineEdit_coordinate.setText(str(Interf1_coordinate))
         self.lineEdit_coordinate.setText(str(Interf2_coordinate))
         self.lineEdit_power.setText(str(Interf1_power))
         self.lineEdit_power.setText(str(Interf2_power))
-
         # 添加名称
         self.label_power.setText("干扰源功率dbm")
         self.button_coordinate.setText("干扰源坐标")
         self.button_sure.setText("添加")
         self.button_cancel.setText("取消")
-
         # 按键绑定槽函数
         self.button_coordinate.clicked.connect(self.slot_button_coordinate)
         self.button_sure.clicked.connect(self.slot_button_sure)
         self.button_cancel.clicked.connect(self.slot_button_cancel)
-
         # 加入珊格布局
         layout.addRow(self.label_power, self.lineEdit_power)
         layout.addRow(self.button_coordinate, self.lineEdit_coordinate)
@@ -107,9 +102,12 @@ class SubWidgetInterf(QWidget):
     # -----------槽函数----------------
     def slot_button_coordinate(self):
         # 在方法内定义的局部变量
-        text, ok = QInputDialog.getText(self, '输入坐标(x,y)', '第一个干扰坐标(x,y)')
-        if ok and text:
-            self.lineEdit_end.setText(text)
+        try:
+            text, ok = QInputDialog.getText(self, '输入坐标(x,y)', '第一个干扰坐标(x,y)')
+            if ok and text:
+                self.lineEdit_coordinate.setText(text)
+        except Exception as res:
+            mw.slot_edit_disp("干扰基站参数输入错误：" + str(res))
 
     def slot_button_sure(self):
         """只允许最多添加两个干扰点，目前。
@@ -117,7 +115,6 @@ class SubWidgetInterf(QWidget):
         try:
             if self.interf_num >= 2:  # 防止直接调用这个函数，而不是通过信号和槽
                 return
-
             myData.myController.set_interf_data(self.lineEdit_power.text(),
                                                 self.lineEdit_coordinate.text())
             # 将这些数据绘制轨道图
@@ -131,13 +128,11 @@ class SubWidgetInterf(QWidget):
                 self.button_sure.setEnabled(True)
         except Exception as res:
             mw.slot_edit_disp("干扰基站参数输入错误：" + str(res))
-
         self.close()  # 关闭窗口
 
     def slot_button_cancel(self):
         print("取消")
         self.close()  # 关闭窗口
-
 
 class SubWidgetRec(QWidget):
     """接收机参数子窗口"""
@@ -207,7 +202,7 @@ class SubWidgetAP(QWidget):
         self.resize(200, 200)
         self.AP_widget()
 
-    def AP_widget(self, AP_power=44.8, AP_gain=13, AP_limit=1, AP_interval=60):
+    def AP_widget(self, AP_power=24.8, AP_gain=13, AP_limit=1, AP_interval=60):
         layout = QFormLayout(self)
         layout.setGeometry(QRect(30,30,200,200))
         """AP参数设置有4个，一个是发射功率，发射增益
@@ -449,7 +444,6 @@ class SubWidgetTrack(QWidget):
         self.close()  # 关闭窗口
 
 
-
     def slot_track_cancel(self):
         print("cancel")
         self.close()
@@ -558,16 +552,32 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         if myData.myController.is_track_empty() or myData.myController.is_AP_empty():
             self.slot_edit_disp("请先配置参数")
             return
-        # 一旦运行，必须reset之后才能重新运行
+        # 一旦运行，必须reset之后才能重新运行，同时关闭其他按钮的使用
         mw.button_run.setEnabled(False)
+        mw.button_track.setEnabled(False)
+        mw.button_scene.setEnabled(False)
+        mw.button_ap.setEnabled(False)
+        mw.button_rec.setEnabled(False)
+        mw.button_interf.setEnabled(False)
+        mw.button_import.setEnabled(False)
+        mw.button_reset.setEnabled(False)
         self.slot_edit_disp("仿真中...")
 
         # 使用多线程来运行这个比较耗时的部分
-        #myt01 = threading.Thread(target=self.run_thread_func)
+        #myt01 = threading.Thread(target=bf.myModel.bf_search)
+        bf.myModel.bf_search()
+        #myt01.start()
         #bf.myModel.bf_search()
-        self.run_thread_func()
-        ##myt01.start()
 
+        #myData.myController.mymutex.acquire()
+
+        for i in range(len(myData.myController.AP_current)):
+            self.graph_paint([myData.myController.AP_current[i][0]], [myData.myController.AP_current[i][1]], symbol="o")
+        self.slot_edit_disp("仿真结束")
+
+        mw.button_reset.setEnabled(True)
+
+        #myData.myController.mymutex.release()
 
     def slot_button_reset(self):
         """1.清除控制器内的所有缓存数据、2.清空绘图界面、3.接触干扰基站的灰色按钮"""
@@ -591,6 +601,12 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         self.slot_edit_disp("正在运行")
         # 使能运行按钮
         mw.button_run.setEnabled(True)
+        mw.button_track.setEnabled(True)
+        mw.button_scene.setEnabled(True)
+        mw.button_ap.setEnabled(True)
+        mw.button_rec.setEnabled(True)
+        mw.button_interf.setEnabled(True)
+        mw.button_import.setEnabled(True)
 
     # ------------ 菜单栏槽函数群 --------------
     def slot_menu_config(self):
@@ -598,6 +614,8 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
 
     def slot_edit_disp(self, _str):
         self.textEdit_disp.setText(_str)
+        # 起到一种类似于刷新界面的效果
+        QApplication.processEvents()
 
 
 

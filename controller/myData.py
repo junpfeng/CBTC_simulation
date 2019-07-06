@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from myAlogrithm import *
 from myParse import *
 import itertools  # 排列组合公式
+import threading
 
 class DataContainer():
     """将图形界面输入的各种
@@ -62,11 +63,14 @@ class DataContainer():
         self.sgma_AP = 2.5  # 目前先采用默认的大小
         self.sgma_interf1 = 2.5  # 目前先采用默认的大小
         self.sgma_interf2 = 2.5  # 目前先采用默认的大小
+        #self.mymutex = threading.Lock()
 
 
     # ------将直接获取的起点终点轨道坐标转换为轨道间隔坐标-----------
     def get_track_list(self, index=0):
         """返回轨道坐标的x轴和y轴"""
+        mymutex = threading.Lock()
+        mymutex.acquire()
         _type = self.type[index]
         _begin = self.begin[index]
         _end = self.end[index]

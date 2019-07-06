@@ -35,8 +35,8 @@ class model():
         输入参数：轨道的x和y轴坐标、轨道测试点的数量、干扰坐标、
         (参数原则，能传参的，绝不计算，加快运行速度）
         计算完成得到的结果："""
-        # mymutex = threading.Lock()
-        # mymutex.acquire()
+        #self.controller.mymutex.acquire()
+
         self.pass_flg = 1  # pass_flg的标志置位
         self.controller.get_AP_Max()  # 由于轨道的长度会
 
@@ -84,7 +84,7 @@ class model():
             if self.pass_flg == 1:
                 break  # 停止继续
 
-        # mymutex.release()
+        #self.controller.mymutex.release()
 
 
 
@@ -114,7 +114,7 @@ class model():
 
         # 积分上下限拆解
         Pout2_2_down = (-_alpha)/(math.sqrt(2)*_sgma_AP)
-        Pout2_2_up = 700  # 数值积分必须给出具体数，采用10000表示inf
+        Pout2_2_up = 700  # math.inf  # 数值积分必须给出具体数，采用10000表示inf
         Pout2_3_1_down = (-_alpha)/(math.sqrt(2)*_sgma_AP)
         Pout2_3_1_up = 700  # math.inf
         Pout2_3_2_down = -700  # math.inf
@@ -138,7 +138,7 @@ class model():
 
         Pout2 = Pout2_1 + \
                 ((1/2)*math.pi)*integrate.dblquad(fun2, Pout2_3_1_down, Pout2_3_1_up, Pout2_3_2_down, Pout2_3_2_up)[0] + \
-                (1/(2*math.sqrt(math.pi)))*integrate.quad(fun1, Pout2_2_down, Pout2_2_up)[0]   # 积分函数返回的是列表，第一个元素是积分值
+                (1/(2*math.sqrt(math.pi)))*integrate.quad(fun1, Pout2_2_down, Pout2_2_up, limit=1000)[0]   # 积分函数返回的是列表，第一个元素是积分值
 
         return Pout2
 
