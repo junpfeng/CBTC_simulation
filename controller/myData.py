@@ -27,7 +27,7 @@ class DataContainer():
         # 和y轴列表
         self.track_list_y = []
         self.track_list_xy = []
-
+        self.track_index = 0  # 用于记录当前已经输入了几个轨道
         # -----------scene------------
         self.scene = []
         # -----------AP---------------
@@ -69,8 +69,9 @@ class DataContainer():
     # ------将直接获取的起点终点轨道坐标转换为轨道间隔坐标-----------
     def get_track_list(self, index=0):
         """返回轨道坐标的x轴和y轴"""
-        mymutex = threading.Lock()
-        mymutex.acquire()
+        # mymutex = threading.Lock()
+        # mymutex.acquire()
+        index = len(self.type) - 1
         _type = self.type[index]
         _begin = self.begin[index]
         _end = self.end[index]
@@ -98,6 +99,8 @@ class DataContainer():
             print("重复轨道")
             return
 
+        # track_index用于记录配置了几个轨道参数
+        self.track_index += 1
         self.index = index  # 整型
         self.type.append(_type)  # 字符串
         self.begin.append(str2coordinate(begin))  # 得到的是字符串，转整型
@@ -120,6 +123,32 @@ class DataContainer():
         self.track_list_xy.clear()
         self.track_list_x.clear()
         self.track_list_y.clear()
+        self.track_index = 0
+
+    def del_track_update(self):
+        """
+        清除最新添加的轨道信息，作用是当轨道格式输入错误时，用于清楚错误信息
+        :return:
+        """
+        # 弹出/删除最新的一个元素
+        if self.track_index == 0:
+            self.track_index = 0
+        else:
+            self.track_index -= 1
+        # 由于检测输入的轨道格式是在track_index+=1之后，因此track_index一定自增了
+        # 经过上面自减之后，正好时候目前最新的元素的索引，不过由于是因为异常退出，不是所有列表都有这么多元素，因此需要判断一下
+        if self.track_index == len(self.type) - 1:
+            self.type.pop(self.track_index)
+        if self.track_index == len(self.begin) - 1:
+            self.begin.pop(self.track_index)
+        if self.track_index == len(self.end) - 1:
+            self.end.pop(self.track_index)
+        if self.track_index == len(self.center) - 1:
+            self.center.pop(self.track_index)
+        if self.track_index == len(self.degree) - 1:
+            self.type.pop(self.track_index)
+        # 为什么不清楚track_list_x,y,xy：因为这些一般不会出错
+
 
     def set_scene_data(self, scene):
         """获取场景参数"""
@@ -145,6 +174,9 @@ class DataContainer():
         self.AP_gain = 0
         self.AP_limit = 1
         self.AP_interval = 60
+        self.AP_x.clear()
+        self.AP_y.clear()
+        self.AP_xy.clear()
 
     def set_Rec_data(self, gain, sensitivity, SIR, Outage):
         """获取接收机参数"""

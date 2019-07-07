@@ -441,6 +441,9 @@ class SubWidgetTrack(QWidget):
                 mw.graph_paint(x, y)
         except Exception as res:
             mw.slot_edit_disp("轨道参数输入出错：" + str(res))
+            # 一旦输入错误，列表类型的 变量会将错误残留在列表内，处理办法：把最新输入的错误信息清除
+            myData.myController.del_track_update()
+
         self.close()  # 关闭窗口
 
 
@@ -570,6 +573,8 @@ class MainWindow(QMainWindow, uim.Ui_MainWindow):
         #bf.myModel.bf_search()
 
         #myData.myController.mymutex.acquire()
+        for i in range(len(myData.myController.AP_x)):
+            self.graph_paint(myData.myController.AP_x, myData.myController.AP_y, symbol='+')
 
         for i in range(len(myData.myController.AP_current)):
             self.graph_paint([myData.myController.AP_current[i][0]], [myData.myController.AP_current[i][1]], symbol="o")
